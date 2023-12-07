@@ -67,7 +67,6 @@ export default {
         userEmail: this.email.val,
         message: this.message.val,
       };
-
       this.$store.dispatch("requests/contactCoach", newRequest);
       this.$router.replace("/coaches");
     },

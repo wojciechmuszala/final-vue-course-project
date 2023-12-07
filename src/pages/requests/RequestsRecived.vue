@@ -1,9 +1,51 @@
 <template>
-  <div>REQUESTS</div>
+  <section>
+    <base-card>
+      <header>
+        <h2>Request Recived</h2>
+      </header>
+      <ul v-if="hasRequests">
+        <request-item
+          v-for="request in recivedRequests"
+          :key="request.id"
+          :email="request.userEmail"
+          :message="request.message"></request-item>
+      </ul>
+      <h3 v-else>You havent'recived any request yet!</h3>
+    </base-card>
+  </section>
 </template>
 
 <script>
-export default {};
+import RequestItem from "../../components/requests/RequestItem";
+export default {
+  components: {
+    RequestItem,
+  },
+  computed: {
+    recivedRequests() {
+      return this.$store.getters["requests/requests"];
+    },
+    hasRequests() {
+      return this.$store.getters["requests/hasRequests"];
+    },
+  },
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+header {
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  margin: 2rem auto;
+  padding: 0;
+  max-width: 30rem;
+}
+
+h3 {
+  text-align: center;
+}
+</style>
