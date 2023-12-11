@@ -29,20 +29,69 @@ export default {
       // add ready object to array
       state.coaches.push(payload);
     },
+    setCoaches(state, payload) {
+      state.coaches = payload;
+    },
   },
   actions: {
     // prepare data to add to array
-    registerCoach(context, data) {
-      const coachData = {
-        id: context.rootGetters.userId, // hardcoded for test
-        firstName: data.first,
-        lastName: data.last,
-        description: data.desc,
-        hourlyRate: data.rate,
-        areas: data.areas,
-      };
+    async registerCoach(context, data) {
+      try {
+        const userId = context.rootGetters.userId;
+        const coachData = {
+          firstName: data.first,
+          lastName: data.last,
+          description: data.desc,
+          hourlyRate: data.rate,
+          areas: data.areas,
+        };
 
-      context.commit("registerCoach", coachData);
+        const firebaseConfig = context.rootGetters["firebaseConfig"];
+
+        await fetch(`${firebaseConfig.endpoint}/coaches/${userId}.json`, {
+          method: "PUT",
+          body: JSON.stringify(coachData),
+        });
+
+        // const responseData = await response.json();
+        context.commit("registerCoach", {
+          ...coachData,
+          id: userId,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async loadCoaches(context) {
+      try {
+        const firebaseConfig = context.rootGetters["firebaseConfig"];
+
+        const response = await fetch(
+          `${firebaseConfig.endpoint}/coaches.json`,
+          {
+            method: "GET",
+          }
+        );
+
+        const responseData = await response.json();
+
+        const coaches = [];
+        for (const key in responseData) {
+          const coach = {
+            id: key,
+            firstName: responseData[key].firstName,
+            lastName: responseData[key].lastName,
+            description: responseData[key].description,
+            hourlyRate: responseData[key].hourlyRate,
+            areas: responseData[key].areas,
+          };
+          coaches.push(coach);
+        }
+
+        context.commit("setCoaches", coaches);
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
   getters: {
