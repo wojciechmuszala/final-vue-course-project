@@ -46,9 +46,9 @@ export default {
           areas: data.areas,
         };
 
-        const firebaseConfig = context.rootGetters["firebaseConfig"];
+        const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
 
-        await fetch(`${firebaseConfig.endpoint}/coaches/${userId}.json`, {
+        await fetch(`${firebaseEndpoint}/coaches/${userId}.json`, {
           method: "PUT",
           body: JSON.stringify(coachData),
         });
@@ -63,35 +63,33 @@ export default {
       }
     },
     async loadCoaches(context) {
-      try {
-        const firebaseConfig = context.rootGetters["firebaseConfig"];
+      const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
 
-        const response = await fetch(
-          `${firebaseConfig.endpoint}/coaches.json`,
-          {
-            method: "GET",
-          }
-        );
+      const response = await fetch(`${firebaseEndpoint}/coaches.json`, {
+        method: "GET",
+      });
 
-        const responseData = await response.json();
+      const responseData = await response.json();
 
-        const coaches = [];
-        for (const key in responseData) {
-          const coach = {
-            id: key,
-            firstName: responseData[key].firstName,
-            lastName: responseData[key].lastName,
-            description: responseData[key].description,
-            hourlyRate: responseData[key].hourlyRate,
-            areas: responseData[key].areas,
-          };
-          coaches.push(coach);
-        }
-
-        context.commit("setCoaches", coaches);
-      } catch (err) {
-        console.log(err);
+      if (!response.ok) {
+        const error = new Error(responseData.message || "Failed to fetch!");
+        throw error;
       }
+
+      const coaches = [];
+      for (const key in responseData) {
+        const coach = {
+          id: key,
+          firstName: responseData[key].firstName,
+          lastName: responseData[key].lastName,
+          description: responseData[key].description,
+          hourlyRate: responseData[key].hourlyRate,
+          areas: responseData[key].areas,
+        };
+        coaches.push(coach);
+      }
+
+      context.commit("setCoaches", coaches);
     },
   },
   getters: {
