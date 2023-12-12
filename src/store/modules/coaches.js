@@ -69,12 +69,12 @@ export default {
         method: "GET",
       });
 
-      const responseData = await response.json();
-
       if (!response.ok) {
         const error = new Error(responseData.message || "Failed to fetch!");
         throw error;
       }
+
+      const responseData = await response.json();
 
       const coaches = [];
       for (const key in responseData) {

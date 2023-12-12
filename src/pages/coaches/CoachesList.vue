@@ -91,10 +91,7 @@ export default {
       } catch (error) {
         this.error = error.message || "Something went wrong!";
       }
-
-      setTimeout(() => {
-        this.isLoading = false;
-      }, "1000");
+      this.isLoading = false;
     },
     handleError() {
       this.error = null;
