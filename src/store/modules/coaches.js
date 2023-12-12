@@ -2,6 +2,7 @@ export default {
   namespaced: true,
   state() {
     return {
+      lastFetch: null,
       coaches: [
         {
           id: "c1",
@@ -31,6 +32,9 @@ export default {
     },
     setCoaches(state, payload) {
       state.coaches = payload;
+    },
+    setFetchTimestamp(state) {
+      state.lastFetch = new Date().getTime();
     },
   },
   actions: {
@@ -62,7 +66,10 @@ export default {
         console.log(err);
       }
     },
-    async loadCoaches(context) {
+    async loadCoaches(context, payload) {
+      if (!payload.forceRefresh && !context.getters.shouldUpdate) {
+        return;
+      }
       const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
 
       const response = await fetch(`${firebaseEndpoint}/coaches.json`, {
@@ -90,6 +97,7 @@ export default {
       }
 
       context.commit("setCoaches", coaches);
+      context.commit("setFetchTimestamp");
     },
   },
   getters: {
@@ -103,6 +111,14 @@ export default {
       const coaches = getters.coaches;
       const userId = rootGetters.userId;
       return coaches.some((coach) => coach.id === userId);
+    },
+    shouldUpdate(state) {
+      const lastFetch = state.lastFetch;
+      if (!lastFetch) {
+        return true;
+      }
+      const currentTimeStamp = new Date().getTime();
+      return (currentTimeStamp - lastFetch) / 1000 > 60;
     },
   },
 };
