@@ -1,17 +1,11 @@
 <template>
-  <div>
-    Error 404 Not Found
-
-    
-  </div>
+  <section>
+    <base-card>
+      <h2>Error 404 Not Found</h2>
+      <p>
+        This page could not be found - maybe check out all our
+        <router-link to="/coaches">coaches</router-link>
+      </p>
+    </base-card>
+  </section>
 </template>
-
-<script>
-  export default {
-    
-  }
-</script>
-
-<style scoped>
-
-</style>
