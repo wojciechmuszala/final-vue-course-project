@@ -41,7 +41,7 @@ export default {
     // prepare data to add to array
     async registerCoach(context, data) {
       try {
-        const userId = context.rootGetters.userId;
+        const userId = context.getters["auth/userId"];
         const coachData = {
           firstName: data.first,
           lastName: data.last,
@@ -107,9 +107,9 @@ export default {
     hasCoaches(state) {
       return state.coaches && state.coaches.length > 0;
     },
-    isCoach(_, getters, _2, rootGetters) {
+    isCoach(_, getters) {
       const coaches = getters.coaches;
-      const userId = rootGetters.userId;
+      const userId = getters["auth/userId"];
       return coaches.some((coach) => coach.id === userId);
     },
     shouldUpdate(state) {

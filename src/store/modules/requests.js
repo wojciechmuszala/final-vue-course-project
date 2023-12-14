@@ -45,7 +45,7 @@ export default {
       context.commit("addRequest", newRequest);
     },
     async fetchRequests(context) {
-      const coachId = context.rootGetters.userId;
+      const coachId = context.getters["auth/userId"];
       const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
 
       const response = await fetch(
@@ -78,8 +78,8 @@ export default {
     },
   },
   getters: {
-    requests(state, _, _2, rootGetters) {
-      const coachId = rootGetters.userId;
+    requests(state, getters) {
+      const coachId = getters["auth/userId"];
       return state.requests.filter((request) => request.coachId === coachId);
     },
     hasRequests(_, getters) {
