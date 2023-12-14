@@ -20,10 +20,10 @@ export default {
         message: payload.message,
       };
 
-      const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
+      const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
       const response = await fetch(
-        `${firebaseEndpoint}/requests/${payload.coachId}.json`,
+        `${firebaseDataEndpoint}/requests/${payload.coachId}.json`,
         {
           method: "POST",
           body: JSON.stringify(newRequest),
@@ -46,12 +46,14 @@ export default {
     },
     async fetchRequests(context) {
       const coachId = context.getters["auth/userId"];
-      const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
+      const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
       const response = await fetch(
-        `${firebaseEndpoint}/requests/${coachId}.json`,
+        `${firebaseDataEndpoint}/requests/${coachId}.json`,
         { method: "GET" }
       );
+
+      const responseData = await response.json();
 
       if (!response.ok) {
         const error = new Error(
@@ -60,10 +62,7 @@ export default {
         throw error;
       }
 
-      const responseData = await response.json();
-
       const requests = [];
-
       for (const key in responseData) {
         const request = {
           id: key,

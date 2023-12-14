@@ -50,9 +50,10 @@ export default {
           areas: data.areas,
         };
 
-        const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
+        const firebaseDataEndpoint =
+          context.rootGetters["firebaseDataEndpoint"];
 
-        await fetch(`${firebaseEndpoint}/coaches/${userId}.json`, {
+        await fetch(`${firebaseDataEndpoint}/coaches/${userId}.json`, {
           method: "PUT",
           body: JSON.stringify(coachData),
         });
@@ -70,18 +71,18 @@ export default {
       if (!payload.forceRefresh && !context.getters.shouldUpdate) {
         return;
       }
-      const firebaseEndpoint = context.rootGetters["firebaseEndpoint"];
+      const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
-      const response = await fetch(`${firebaseEndpoint}/coaches.json`, {
+      const response = await fetch(`${firebaseDataEndpoint}/coaches.json`, {
         method: "GET",
       });
+
+      const responseData = await response.json();
 
       if (!response.ok) {
         const error = new Error(responseData.message || "Failed to fetch!");
         throw error;
       }
-
-      const responseData = await response.json();
 
       const coaches = [];
       for (const key in responseData) {
