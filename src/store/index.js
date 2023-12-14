@@ -12,14 +12,14 @@ const store = createStore({
   state() {
     return {
       firebaseConfig: {
-        apiKey: process.env.VUE_APP_FIREBASE_DATA_API_KEY,
+        apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
         dataEndpoint: process.env.VUE_APP_FIREBASE_DATA_ENDPOINT,
       },
     };
   },
   getters: {
     firebaseApiKey(state) {
-      return state.apiKey;
+      return state.firebaseConfig.apiKey;
     },
     firebaseDataEndpoint(state) {
       return state.firebaseConfig.dataEndpoint;
