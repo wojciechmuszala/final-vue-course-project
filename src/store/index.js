@@ -11,13 +11,18 @@ const store = createStore({
   },
   state() {
     return {
-      userId: "c3", // hardcoded for test
-      firebaseEndpoint: process.env.VUE_APP_FIREBASE_ENDPOINT,
+      firebaseConfig: {
+        apiKey: process.env.VUE_APP_FIREBASE_DATA_API_KEY,
+        dataEndpoint: process.env.VUE_APP_FIREBASE_DATA_ENDPOINT,
+      },
     };
   },
   getters: {
-    firebaseEndpoint(state) {
-      return state.firebaseEndpoint;
+    firebaseApiKey(state) {
+      return state.apiKey;
+    },
+    firebaseDataEndpoint(state) {
+      return state.firebaseConfig.dataEndpoint;
     },
   },
 });
