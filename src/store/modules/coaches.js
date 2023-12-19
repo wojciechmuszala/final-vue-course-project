@@ -41,7 +41,7 @@ export default {
     // prepare data to add to array
     async registerCoach(context, data) {
       try {
-        const userId = context.getters["auth/userId"];
+        const userId = context.rootGetters["auth/userId"];
         const coachData = {
           firstName: data.first,
           lastName: data.last,
@@ -53,17 +53,15 @@ export default {
         const firebaseDataEndpoint =
           context.rootGetters["firebaseDataEndpoint"];
 
-        const response = await fetch(
-          `${firebaseDataEndpoint}/coaches/${userId}.json`,
+        const token = context.rootGetters["auth/token"];
+
+        await fetch(
+          `${firebaseDataEndpoint}/coaches/${userId}.json?auth=${token}`,
           {
             method: "PUT",
             body: JSON.stringify(coachData),
           }
         );
-
-        const responseData = await response.json();
-
-        console.log(responseData)
 
         context.commit("registerCoach", {
           ...coachData,
@@ -79,12 +77,9 @@ export default {
       }
       const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
-      const response = await fetch(
-        `${firebaseDataEndpoint}/coaches.json`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(`${firebaseDataEndpoint}/coaches.json`, {
+        method: "GET",
+      });
 
       const responseData = await response.json();
 
@@ -117,9 +112,9 @@ export default {
     hasCoaches(state) {
       return state.coaches && state.coaches.length > 0;
     },
-    isCoach(_, getters) {
+    isCoach(_, getters, _2, rootGetters) {
       const coaches = getters.coaches;
-      const userId = getters["auth/userId"];
+      const userId = rootGetters["auth/userId"];
       return coaches.some((coach) => coach.id === userId);
     },
     shouldUpdate(state) {

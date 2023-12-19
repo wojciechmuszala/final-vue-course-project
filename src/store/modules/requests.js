@@ -45,11 +45,12 @@ export default {
       context.commit("addRequest", newRequest);
     },
     async fetchRequests(context) {
-      const coachId = context.getters["auth/userId"];
+      const coachId = context.rootGetters["auth/userId"];
+      const token = context.rootGetters["auth/token"];
       const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
       const response = await fetch(
-        `${firebaseDataEndpoint}/requests/${coachId}.json`,
+        `${firebaseDataEndpoint}/requests/${coachId}.json?auth=${token}`,
         { method: "GET" }
       );
 
@@ -77,8 +78,8 @@ export default {
     },
   },
   getters: {
-    requests(state, getters) {
-      const coachId = getters["auth/userId"];
+    requests(state, _, _2, rootGetters) {
+      const coachId = rootGetters["auth/userId"];
       return state.requests.filter((request) => request.coachId === coachId);
     },
     hasRequests(_, getters) {
