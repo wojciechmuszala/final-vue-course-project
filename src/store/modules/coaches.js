@@ -53,12 +53,18 @@ export default {
         const firebaseDataEndpoint =
           context.rootGetters["firebaseDataEndpoint"];
 
-        await fetch(`${firebaseDataEndpoint}/coaches/${userId}.json`, {
-          method: "PUT",
-          body: JSON.stringify(coachData),
-        });
+        const response = await fetch(
+          `${firebaseDataEndpoint}/coaches/${userId}.json`,
+          {
+            method: "PUT",
+            body: JSON.stringify(coachData),
+          }
+        );
 
-        // const responseData = await response.json();
+        const responseData = await response.json();
+
+        console.log(responseData)
+
         context.commit("registerCoach", {
           ...coachData,
           id: userId,
@@ -73,9 +79,12 @@ export default {
       }
       const firebaseDataEndpoint = context.rootGetters["firebaseDataEndpoint"];
 
-      const response = await fetch(`${firebaseDataEndpoint}/coaches.json`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${firebaseDataEndpoint}/coaches.json`,
+        {
+          method: "GET",
+        }
+      );
 
       const responseData = await response.json();
 
