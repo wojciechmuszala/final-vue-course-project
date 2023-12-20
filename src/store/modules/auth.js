@@ -16,7 +16,6 @@ export default {
   },
   actions: {
     async login(context, payload) {
-      console.log(payload);
       const firebaseApiKey = context.rootGetters["firebaseApiKey"];
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseApiKey}`,
@@ -29,8 +28,6 @@ export default {
           }),
         }
       );
-
-      console.log(response);
 
       const responseData = await response.json();
 
@@ -62,8 +59,6 @@ export default {
         }
       );
 
-      console.log(response);
-
       const responseData = await response.json();
 
       if (!response.ok) {
@@ -80,6 +75,13 @@ export default {
         tokenExpiration: responseData.expiresIn,
       });
     },
+    logout(context) {
+      context.commit("setUser", {
+        token: null,
+        userId: null,
+        tokenExpiration: null,
+      });
+    },
   },
   getters: {
     userId(state) {
@@ -89,7 +91,7 @@ export default {
       return state.token;
     },
     isAuthenticated(state) {
-      return !!state.token
-    }
+      return !!state.token;
+    },
   },
 };
