@@ -15,19 +15,34 @@ export default {
     },
   },
   actions: {
-    async login(context, payload) {
+    signup(context, payload) {
+      return context.dispatch("auth", {
+        ...payload,
+        mode: "signup",
+      });
+    },
+    login(context, payload) {
+      return context.dispatch("auth", {
+        ...payload,
+        mode: "login",
+      });
+    },
+    async auth(context, payload) {
       const firebaseApiKey = context.rootGetters["firebaseApiKey"];
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseApiKey}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: payload.email,
-            password: payload.password,
-            returnSecureToken: true,
-          }),
-        }
-      );
+      const mode = payload.mode;
+      const apiEndpointUrl =
+        mode === "signup"
+          ? `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`
+          : `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseApiKey}`;
+
+      const response = await fetch(apiEndpointUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          email: payload.email,
+          password: payload.password,
+          returnSecureToken: true,
+        }),
+      });
 
       const responseData = await response.json();
 
@@ -38,6 +53,9 @@ export default {
         );
         throw error;
       }
+
+      localStorage.setItem("token", responseData.idToken);
+      localStorage.setItem("userId", responseData.localId);
 
       context.commit("setUser", {
         token: responseData.idToken,
@@ -45,35 +63,17 @@ export default {
         tokenExpiration: responseData.expiresIn,
       });
     },
-    async signup(context, payload) {
-      const firebaseApiKey = context.rootGetters["firebaseApiKey"];
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: payload.email,
-            password: payload.password,
-            returnSecureToken: true,
-          }),
-        }
-      );
+    autoLogin(context) {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message ||
-            "Failed to authenticate. Check your login data."
-        );
-        throw error;
+      if (token && userId) {
+        context.commit('setUser', {
+          token: token,
+          userId: userId,
+          tokenExpiration: null
+        })
       }
-
-      context.commit("setUser", {
-        token: responseData.idToken,
-        userId: responseData.localId,
-        tokenExpiration: responseData.expiresIn,
-      });
     },
     logout(context) {
       context.commit("setUser", {

@@ -13,6 +13,9 @@ import TheHeader from "./components/layout/TheHeader.vue";
 export default {
   name: "App",
   components: { TheHeader },
+  created() {
+    this.$store.dispatch("auth/autoLogin");
+  },
 };
 </script>
 
